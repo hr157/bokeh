@@ -683,6 +683,52 @@ def RELATIVE_DATETIME_CONTEXT() -> DatetimeTickFormatter:
         years = "",
     )
 
+def CONTEXTUAL_DATETIME_FORMATTER() -> DatetimeTickFormatter:
+    return DatetimeTickFormatter(
+        microseconds = "%fus",
+        milliseconds = "%3Nms",
+        seconds = "%T",
+        minsec = "%T",
+        minutes = "%H:%M",
+        hourmin = "%H:%M",
+        hours = "%H:%M",
+        days = "%b %d",
+        months = "%b %Y",
+        years = "%Y",
+        strip_leading_zeros = ["microseconds", "milliseconds", "seconds"],
+        boundary_scaling = False,
+        context_which = "all",
+        context = DatetimeTickFormatter(
+            microseconds="%T",
+            milliseconds="%T",
+            seconds="%b %d, %Y",
+            minsec="%b %d, %Y",
+            minutes="%b %d, %Y",
+            hourmin="%b %d, %Y",
+            hours="%b %d, %Y",
+            days="%Y",
+            months="",
+            years="",
+            boundary_scaling=False,
+            hide_repeats=True,
+            context_which="all",
+            context=DatetimeTickFormatter(
+                microseconds="%b %d, %Y",
+                milliseconds="%b %d, %Y",
+                seconds="",
+                minsec="",
+                minutes="",
+                hourmin="",
+                hours="",
+                days="",
+                months="",
+                years="",
+                boundary_scaling=False,
+                hide_repeats=True,
+                context=None,
+            ),
+        ),
+    )
 #-----------------------------------------------------------------------------
 # Dev API
 #-----------------------------------------------------------------------------
