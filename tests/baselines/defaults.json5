@@ -5320,6 +5320,7 @@
   },
   Plot: {
     __extends__: "LayoutDOM",
+    context_menu: "auto",
     width: 600,
     height: 600,
     x_range: {
@@ -6661,6 +6662,13 @@
     description: null,
     visible: true,
   },
+  ToolMenu: {
+    __extends__: "Menu",
+    toolbar: {
+      type: "symbol",
+      name: "unset",
+    },
+  },
   ToolProxy: {
     __extends__: "Model",
     tools: [],
@@ -6824,6 +6832,21 @@
   },
   ActionItem: {
     __extends__: "MenuItem",
+  },
+  CheckableItem: {
+    __extends__: "MenuItem",
+  },
+  DividerItem: {
+    __extends__: "Model",
+  },
+  Menu: {
+    __extends__: "UIElement",
+    items: [],
+    reversed: false,
+  },
+  MenuItem: {
+    __extends__: "Model",
+    checked: null,
     icon: null,
     label: {
       type: "symbol",
@@ -6834,21 +6857,6 @@
     tooltip: null,
     disabled: false,
     action: null,
-  },
-  CheckableItem: {
-    __extends__: "ActionItem",
-    checked: false,
-  },
-  DividerItem: {
-    __extends__: "MenuItem",
-  },
-  Menu: {
-    __extends__: "UIElement",
-    items: [],
-    reversed: false,
-  },
-  MenuItem: {
-    __extends__: "Model",
   },
   Panel: {
     __extends__: "Pane",
