@@ -37,13 +37,13 @@ from ..core.properties import (
     Int,
     List,
     Nullable,
-    Object,
     Seq,
     String,
     TextLike,
     TimeDelta,
     Tuple,
 )
+from ..core.property.data_frame import EagerSeries, PandasGroupBy
 from ..models import (
     ColumnDataSource,
     CoordinateMapping,
@@ -819,8 +819,8 @@ RangeLike = Either(
         Tuple(TimeDelta, TimeDelta),
     ),
     Seq(String),
-    Object("pandas.Series"),
-    Object("pandas.core.groupby.GroupBy"),
+    EagerSeries,
+    PandasGroupBy,
 )
 
 AxisType = Nullable(Either(Auto, Enum("linear", "log", "datetime", "mercator")))

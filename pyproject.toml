@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 dependencies = [
     "Jinja2 >=2.9",
     "contourpy >=1.2",
+    "narwhals>=1.13",
     "numpy >=1.16",
     "packaging >=16.8",
     "pandas >=1.2",
@@ -216,7 +217,7 @@ module = [
     "bokeh.core.property.nullable",
     "bokeh.core.property.numeric",
     "bokeh.core.property.override",
-    "bokeh.core.property.pd",
+    "bokeh.core.property.data_frame",
     "bokeh.core.property.primitive",
     "bokeh.core.property.readonly",
     "bokeh.core.property.required",

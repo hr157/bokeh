@@ -22,6 +22,7 @@ import io
 from pathlib import Path
 
 # External imports
+import narwhals.stable.v1 as nw
 import numpy as np
 import pandas as pd
 
@@ -83,57 +84,63 @@ class TestColumnDataSource:
         assert [0, 1] == list(ds.data['index'])
         assert set(ds.column_names) - set(df.columns) == {"index"}
 
-    def test_data_accepts_dataframe_arg(self) -> None:
+    def test_data_accepts_dataframe_arg(self, constructor) -> None:
         data = dict(a=[1, 2], b=[2, 3])
-        df = pd.DataFrame(data)
+        df = nw.from_native(constructor(data), eager_only=True)
+        ds = bms.ColumnDataSource()
+        assert ds.data == {}
+        ds.data = df.to_native()
+        assert set(df.columns).issubset(set(ds.column_names))
+        for key in data.keys():
+            assert isinstance(ds.data[key], np.ndarray)
+            assert df[key].to_list() == list(ds.data[key])
+        assert isinstance(ds.data['index'], np.ndarray)
+        assert [0, 1] == list(ds.data['index'])
+        assert set(ds.column_names) - set(df.columns) == {"index"}
+
+    def test_init_dataframe_data_kwarg(self, constructor) -> None:
+        data = dict(a=[1, 2], b=[2, 3])
+        df = nw.from_native(constructor(data), eager_only=True)
+        ds = bms.ColumnDataSource(data=df.to_native())
+        assert set(df.columns).issubset(set(ds.column_names))
+        for key in data.keys():
+            assert isinstance(ds.data[key], np.ndarray)
+            assert df[key].to_list() == list(ds.data[key])
+        assert isinstance(ds.data['index'], np.ndarray)
+        assert [0, 1] == list(ds.data['index'])
+        assert set(ds.column_names) - set(df.columns) == {"index"}
+
+    def test_init_dataframe_index_named_column(self, constructor) -> None:
+        data = dict(a=[1, 2], b=[2, 3], index=[4, 5])
+        df = nw.from_native(constructor(data), eager_only=True)
+        ds = bms.ColumnDataSource(data=df.to_native())
+        assert set(df.columns).issubset(set(ds.column_names))
+        for key in data.keys():
+            assert isinstance(ds.data[key], np.ndarray)
+            assert df[key].to_list() == list(ds.data[key])
+        assert isinstance(ds.data['level_0'], np.ndarray)
+        assert [0, 1] == list(ds.data['level_0'])
+        assert set(ds.column_names) - set(df.columns) == {"level_0"}
+
+    def test_data_accepts_dataframe_index_named_column(self, constructor) -> None:
+        data = dict(a=[1, 2], b=[2, 3], index=[4, 5])
+        df = nw.from_native(constructor(data), eager_only=True)
         ds = bms.ColumnDataSource()
         assert ds.data == {}
         ds.data = df
         assert set(df.columns).issubset(set(ds.column_names))
         for key in data.keys():
             assert isinstance(ds.data[key], np.ndarray)
-            assert list(df[key]) == list(ds.data[key])
-        assert isinstance(ds.data['index'], np.ndarray)
-        assert [0, 1] == list(ds.data['index'])
-        assert set(ds.column_names) - set(df.columns) == {"index"}
-
-    def test_init_dataframe_data_kwarg(self) -> None:
-        data = dict(a=[1, 2], b=[2, 3])
-        df = pd.DataFrame(data)
-        ds = bms.ColumnDataSource(data=df)
-        assert set(df.columns).issubset(set(ds.column_names))
-        for key in data.keys():
-            assert isinstance(ds.data[key], np.ndarray)
-            assert list(df[key]) == list(ds.data[key])
-        assert isinstance(ds.data['index'], np.ndarray)
-        assert [0, 1] == list(ds.data['index'])
-        assert set(ds.column_names) - set(df.columns) == {"index"}
-
-    def test_init_dataframe_index_named_column(self) -> None:
-        data = dict(a=[1, 2], b=[2, 3], index=[4, 5])
-        df = pd.DataFrame(data)
-        ds = bms.ColumnDataSource(data=df)
-        assert set(df.columns).issubset(set(ds.column_names))
-        for key in data.keys():
-            assert isinstance(ds.data[key], np.ndarray)
-            assert list(df[key]) == list(ds.data[key])
+            assert df[key].to_list() == list(ds.data[key])
         assert isinstance(ds.data['level_0'], np.ndarray)
         assert [0, 1] == list(ds.data['level_0'])
         assert set(ds.column_names) - set(df.columns) == {"level_0"}
 
-    def test_data_accepts_dataframe_index_named_column(self) -> None:
-        data = dict(a=[1, 2], b=[2, 3], index=[4, 5])
-        df = pd.DataFrame(data)
-        ds = bms.ColumnDataSource()
-        assert ds.data == {}
-        ds.data = df
-        assert set(df.columns).issubset(set(ds.column_names))
-        for key in data.keys():
-            assert isinstance(ds.data[key], np.ndarray)
-            assert list(df[key]) == list(ds.data[key])
-        assert isinstance(ds.data['level_0'], np.ndarray)
-        assert [0, 1] == list(ds.data['level_0'])
-        assert set(ds.column_names) - set(df.columns) == {"level_0"}
+    def test_init_dataframe_index_named_column_level_0(self, constructor) -> None:
+        data = dict(a=[1, 2], b=[2, 3], index=[4, 5], level_0=[2, 1])
+        df = nw.from_native(constructor(data), eager_only=True)
+        with pytest.raises(ValueError):
+            bms.ColumnDataSource(data=df.to_native())
 
     def test_init_dataframe_column_categoricalindex(self) -> None:
         columns = pd.CategoricalIndex(['a', 'b'])

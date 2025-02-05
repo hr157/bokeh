@@ -161,23 +161,24 @@ property of your ColumnDataSource object:
 
 .. _ug_basic_data_cds_pandas_data_frame:
 
-Using a pandas DataFrame
-~~~~~~~~~~~~~~~~~~~~~~~~
+Using dataframes
+~~~~~~~~~~~~~~~~
 
-The ``data`` parameter can also be a pandas ``DataFrame`` or ``GroupBy`` object:
+The ``data`` parameter can also be a dataframe (pandas, Polars, PyArrow, or any other eager dataframe
+supported by `Narwhals <https://narwhals-dev.github.io/narwhals/>`_) or a pandas ``GroupBy`` object:
 
 .. code-block:: python
 
    source = ColumnDataSource(df)
 
-If you use a pandas ``DataFrame``, the resulting ColumnDataSource in Bokeh will
+If you use a ``DataFrame``, the resulting ColumnDataSource in Bokeh will
 have columns that correspond to the columns of the ``DataFrame``. The naming of
 the columns follows these rules:
 
 * If the ``DataFrame`` has a named index column, the ColumnDataSource will also
   have a column with this name.
-* If the index name is ``None``, the ColumnDataSource will have a generic name:
-  either ``index`` (if that name is available) or ``level_0``.
+* If the index name is ``None`` (or if there is no index), the ColumnDataSource
+  will have a generic name: either ``index`` (if that name is available) or ``level_0``.
 
 .. _ug_basic_data_cds_pandas_multi_index:
 
