@@ -14,8 +14,9 @@ import {build_views} from "core/build_views"
 import {logger} from "core/logging"
 import type {Arrayable, Rect, FloatArray} from "core/types"
 import {ScreenArray, Indices} from "core/types"
-import {isString} from "core/util/types"
+import {isArrayable, isString} from "core/util/types"
 import {RaggedArray} from "core/util/ragged_array"
+import {every} from "core/util/array"
 import {inplace_map} from "core/util/arrayable"
 import {inplace, project_xy} from "core/util/projections"
 import {is_equal, EqNotImplemented} from "core/util/eq"
@@ -369,6 +370,16 @@ export abstract class GlyphView extends DOMComponentView {
   }
 
   protected _transform_array<T>(prop: p.BaseCoordinateSpec<T>, array: Arrayable<unknown>) {
+    // examine just the top level of a 2-d array to validate
+    // that every subitem is an array of some kind, as expected
+    if (prop instanceof p.CoordinateSeqSpec) {
+      if (!every(array, isArrayable)) {
+        const msg = `expected a 2-d array for ${this.model.type}.${prop.attr}`
+        logger.error(msg)
+        throw new Error(msg)
+      }
+    }
+
     const {x_source, y_source} = this.renderer.coordinates
     const range = prop.dimension == "x" ? x_source : y_source
 
