@@ -4326,4 +4326,23 @@ describe("Bug", () => {
       await view.ready
     })
   })
+
+  describe("in issue #14280", () => {
+    it("triggers JS error when adding tile without defining range", async () => {
+      const osm = new TileRenderer({tile_source: osm_source.clone()})
+
+      const p0 = fig([300, 200], {
+        x_range: new DataRange1d(),
+        y_range: new DataRange1d(),
+        x_axis_type: "mercator",
+        y_axis_type: "mercator",
+      })
+
+      const {view} = await display(p0)
+
+      p0.renderers = [osm]
+
+      await view.ready
+    })
+  })
 })
