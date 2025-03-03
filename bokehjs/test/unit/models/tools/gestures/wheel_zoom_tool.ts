@@ -1,5 +1,6 @@
 import {expect} from "assertions"
 import {display} from "../../../_util"
+import {PlotActions, xy} from "../../../../interactive"
 
 import type {GestureTool} from "@bokehjs/models/tools/gestures/gesture_tool"
 import {WheelZoomTool} from "@bokehjs/models/tools/gestures/wheel_zoom_tool"
@@ -8,6 +9,8 @@ import type {PlotView} from "@bokehjs/models/plots/plot"
 import {Plot} from "@bokehjs/models/plots/plot"
 import {LinearAxis} from "@bokehjs/models/axes/linear_axis"
 import type {ViewOf} from "@bokehjs/core/view"
+import {has_focus} from "@bokehjs/core/dom"
+import {figure} from "@bokehjs/api/figure"
 
 const modifiers = {ctrl: false, shift: false, alt: false}
 
@@ -253,5 +256,69 @@ describe("WheelZoomTool", () => {
         y: [-0.833333, 0.833333],
       })
     })
+  })
+
+  it("should support auto-activation when active_scroll='auto' and plot has focus", async () => {
+    const wheel_zoom = new WheelZoomTool()
+    const p = figure({
+      frame_width: 200,
+      frame_height: 200,
+      x_range: [0, 10],
+      y_range: [0, 10],
+      tools: [wheel_zoom],
+      active_scroll: "auto",
+      toolbar_location: "right",
+    })
+    p.scatter([1, 5, 9], [1, 5, 9], {size: 20})
+
+    const {view} = await display(p)
+    const actions = new PlotActions(view)
+
+    expect(has_focus(view.canvas_view.events_el)).to.be.false
+    expect(wheel_zoom.active).to.be.false
+
+    expect(xy_axis(view)).to.be.equal({x: [0, 10], y: [0, 10]})
+
+    await actions.scroll_up(xy(5, 5))
+    await view.ready
+    expect(xy_axis(view)).to.be.equal({x: [0, 10], y: [0, 10]})
+
+    view.canvas_view.events_el.focus()
+    await view.ready
+    expect(has_focus(view.canvas_view.events_el)).to.be.true
+    expect(wheel_zoom.active).to.be.true
+
+    await actions.scroll_up(xy(5, 5), 2)
+    await view.ready
+    expect(xy_axis(view)).to.be.similar({x: [2, 8], y: [2, 8]})
+
+    view.canvas_view.events_el.blur()
+    await view.ready
+    expect(has_focus(view.canvas_view.events_el)).to.be.false
+    expect(wheel_zoom.active).to.be.false
+
+    await actions.scroll_up(xy(5, 5), 2)
+    await view.ready
+    expect(xy_axis(view)).to.be.similar({x: [2, 8], y: [2, 8]})
+
+    view.canvas_view.events_el.focus()
+    await view.ready
+    expect(has_focus(view.canvas_view.events_el)).to.be.true
+    expect(wheel_zoom.active).to.be.true
+
+    // WheelZoomTool is unable to return to original bounds:
+    // https://github.com/bokeh/bokeh/issues/11294
+    await actions.scroll_down(xy(5, 5), 2)
+    await view.ready
+    expect(xy_axis(view)).to.be.similar({x: [0.8, 9.2], y: [0.8, 9.2]})
+
+    view.canvas_view.events_el.blur()
+    await view.ready
+    expect(has_focus(view.canvas_view.events_el)).to.be.false
+    expect(wheel_zoom.active).to.be.false
+
+    await actions.scroll_up(xy(5, 5), 2)
+    await view.ready
+    expect(xy_axis(view)).to.be.similar({x: [0.8, 9.2], y: [0.8, 9.2]})
   })
 })
