@@ -19,6 +19,8 @@ from .._specs import (
     FontSizeArg,
     FontStyleArg,
     HatchPatternArg,
+    Image2dArg,
+    Image3dArg,
     IntArg,
     LineCapArg,
     LineJoinArg,
@@ -26,7 +28,6 @@ from .._specs import (
     NonNegative,
     NullDistanceArg,
     Number1dArg,
-    Number2dArg,
     Number3dArg,
     NumberArg,
     OutlineShapeNameArg,
@@ -36,11 +37,14 @@ from .._specs import (
     TextAnchorArg,
     TextBaselineArg,
 )
+from .._types import Color
 from ..core.enums import (
     AnchorType as Anchor,
     AngleUnitsType as AngleUnits,
     DirectionType as Direction,
+    PaletteType as Palette,
     RadiusDimensionType as RadiusDimension,
+    RenderLevelType as RendererLevel,
     SpatialUnitsType as SpatialUnits,
     StepModeType as StepMode,
     TeXDisplayType as TeXDisplay,
@@ -50,11 +54,12 @@ from ..core.property_aliases import (
     PaddingType as Padding,
 )
 from ..models import glyphs
+from ..models.annotations import Legend
 from ..models.callbacks import CustomJS
 from ..models.coordinates import CoordinateMapping
 from ..models.plots import Plot
 from ..models.renderers import GlyphRenderer
-from ..models.sources import ColumnarDataSource, DataDictLike
+from ..models.sources import CDSView, ColumnarDataSource, DataDictLike
 from ..models.textures import Texture
 
 class AuxVisuals(TypedDict, total=False):
@@ -163,10 +168,23 @@ class TextVisuals(AuxTextVisuals, total=False):
     text_baseline: TextBaselineArg
     text_line_height: NumberArg
 
-
 class AuxGlyphArgs(TypedDict, total=False):
-    source: ColumnarDataSource | DataDictLike
+    # Model
+    name: str | None
 
+    # Renderer
+    coordinates: CoordinateMapping | None
+    x_range_name: str
+    y_range_name: str
+    level: RendererLevel
+    visible: bool
+
+    # GlyphRenderer
+    source: ColumnarDataSource | DataDictLike
+    view: CDSView
+    muted: bool
+
+    legend: Legend
     legend_label: str
     legend_field: str
     legend_group: str
@@ -280,16 +298,16 @@ class HexTileArgs(GlyphArgs, LineVisuals, FillVisuals, HatchVisuals, total=False
     orientation: str
 
 class ImageArgs(GlyphArgs, total=False):
-    # image: Number2dArg
+    # image: Image2dArg
     # x: NumberArg
     # y: NumberArg
     # dw: DistanceArg
     # dh: DistanceArg
     # dilate: bool
-    pass
+    palette: Palette | list[Color]
 
 class ImageRGBAArgs(GlyphArgs, total=False):
-    # image: Number2dArg
+    # image: Image2dArg
     # x: NumberArg
     # y: NumberArg
     # dw: DistanceArg
@@ -298,7 +316,7 @@ class ImageRGBAArgs(GlyphArgs, total=False):
     pass
 
 class ImageStackArgs(GlyphArgs, total=False):
-    # image: Number3dArg
+    # image: Image3dArg
     # x: NumberArg
     # y: NumberArg
     # dw: DistanceArg
@@ -590,7 +608,7 @@ class GlyphAPI:
     ) -> GlyphRenderer[glyphs.HexTile]: ...
 
     def image(self,
-        image: Number2dArg = ...,
+        image: Image2dArg = ...,
         x: NumberArg = ...,
         y: NumberArg = ...,
         dw: DistanceArg = ...,
@@ -600,7 +618,7 @@ class GlyphAPI:
     ) -> GlyphRenderer[glyphs.Image]: ...
 
     def image_rgba(self,
-        image: Number2dArg = ...,
+        image: Image2dArg = ...,
         x: NumberArg = ...,
         y: NumberArg = ...,
         dw: DistanceArg = ...,
@@ -610,7 +628,7 @@ class GlyphAPI:
     ) -> GlyphRenderer[glyphs.ImageRGBA]: ...
 
     def image_stack(self,
-        image: Number3dArg = ...,
+        image: Image3dArg = ...,
         x: NumberArg = ...,
         y: NumberArg = ...,
         dw: DistanceArg = ...,
