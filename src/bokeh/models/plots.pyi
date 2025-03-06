@@ -26,6 +26,7 @@ from ..core.enums import (
     OutputBackendType as OutputBackend,
     PlaceType as Place,
     ResetPolicyType as ResetPolicy,
+    WindowAxisType as WindowAxis,
 )
 from ..core.property_aliases import LRTB
 from ..core.property_mixins import (
@@ -69,6 +70,8 @@ class Plot(LayoutDOM, BackgroundFill, BackgroundHatch, BorderFill, BorderHatch, 
     extra_x_scales: dict[str, Scale] = ...
 
     extra_y_scales: dict[str, Scale] = ...
+
+    window_axis: WindowAxis = ...
 
     hidpi: bool = ...
 

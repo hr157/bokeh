@@ -105,6 +105,7 @@ ALL = (
     'VAlign',
     'VerticalAlign',
     'VerticalLocation',
+    'WindowAxis',
 )
 
 #-----------------------------------------------------------------------------
@@ -499,6 +500,9 @@ class Test_bce:
 
     def test_VerticalLocation(self) -> None:
         assert tuple(bce.VerticalLocation) == ("above", "below")
+
+    def test_WindowAxis(self) -> None:
+        assert tuple(bce.WindowAxis) == ("none", "x", "y")
 
 # any changes to contents of bce.py easily trackable here
 def test_enums_contents() -> None:
