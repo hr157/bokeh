@@ -171,7 +171,7 @@ If you would like to contribute to Bokeh, please review the [Contributor Guide](
 
 ### Fiscal Support
 
-The Bokeh project is grateful for [individual contributions](https://opencollective.com/bokeh), as well as for monetary support from the organizations and companies listed below:
+The Bokeh project is grateful for [individual contributions](https://opencollective.com/bokeh), as well as for present and past monetary support from the organizations and companies listed below:
 
 <table align="center">
 <tr>
