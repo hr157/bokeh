@@ -48,7 +48,6 @@ from sphinx.util.display import status_iterator
 from . import PARALLEL_SAFE
 from .bokeh_directive import BokehDirective
 from .templates import GALLERY_DETAIL, GALLERY_PAGE
-from .util import _REPO_TOP
 
 # -----------------------------------------------------------------------------
 # Globals and constants
@@ -156,9 +155,10 @@ def config_inited_handler(app, config):
 
 
 def get_details(app):
+    from ._internal import REPO_TOP
     details = []
     for subdir in app.config.bokeh_example_subdirs:
-        for name in os.listdir(_REPO_TOP / "examples" / subdir):
+        for name in os.listdir(REPO_TOP / "examples" / subdir):
             path = PurePath("examples", subdir, name).as_posix()
             if not name.startswith('_') and name.endswith('.py') and path not in app.config.bokeh_sampledata_xref_skiplist:
                 name = name.replace('.py', '')
